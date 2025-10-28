@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const userBadge = document.getElementById('userBadge');
     const adminLink = document.getElementById('adminLink');
     const heroCreateBtn = document.getElementById('heroCreateBtn');
-     communityCreateBtn = document.getElementById('communityCreateBtn');
+    const communityCreateBtn = document.getElementById('communityCreateBtn');
     
     // Create Raw Section
     const createRawSection = document.getElementById('createRawSection');
@@ -225,22 +225,32 @@ document.addEventListener('DOMContentLoaded', function() {
                     <i class="fas fa-external-link-alt"></i> Ver Raw
                 </a>
                 <button class="btn btn-outline btn-sm copy-raw-btn" data-id="${id}">
-                    <i class="fas fa-copy"></i> Copiar Link
+                    <i class="fas fa-copy"></i> Copiar Loadstring
                 </button>
             </div>
         `;
         
-// Add copy link functionality
-div.querySelector('.copy-raw-btn').addEventListener('click', function() {
-    const rawUrl = `${window.location.origin}/api/raw?id=${id}`;
-    
-    // Copia o loadstring COMPLETO
-    const loadstringCode = `loadstring(game:HttpGet("${rawUrl}"))()`;
-    
-    navigator.clipboard.writeText(loadstringCode).then(() => {
-        alert('Loadstring copiado! Cole no executor.');
-    });
-});
+        // Add copy link functionality
+        div.querySelector('.copy-raw-btn').addEventListener('click', function() {
+            const rawUrl = `${window.location.origin}/api/raw?id=${id}`;
+            
+            // Copia o loadstring COMPLETO
+            const loadstringCode = `loadstring(game:HttpGet("${rawUrl}"))()`;
+            
+            navigator.clipboard.writeText(loadstringCode).then(() => {
+                alert('Loadstring copiado! Cole no executor.');
+            }).catch(err => {
+                // Fallback para navegadores que não suportam clipboard API
+                const textArea = document.createElement('textarea');
+                textArea.value = loadstringCode;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Loadstring copiado! Cole no executor.');
+            });
+        });
+        
         return div;
     }
     
