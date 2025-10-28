@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const userBadge = document.getElementById('userBadge');
     const adminLink = document.getElementById('adminLink');
     const heroCreateBtn = document.getElementById('heroCreateBtn');
-    const communityCreateBtn = document.getElementById('communityCreateBtn');
+     communityCreateBtn = document.getElementById('communityCreateBtn');
     
     // Create Raw Section
     const createRawSection = document.getElementById('createRawSection');
@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span class="raw-date"><i class="fas fa-calendar"></i> ${formatDate(raw.createdAt)}</span>
             </div>
             <div class="raw-actions">
-                <a href="raw.html?id=${id}" class="btn btn-outline btn-sm" target="_blank">
+                <a href="api/raw?id=${id}" class="btn btn-outline btn-sm" target="_blank">
                     <i class="fas fa-external-link-alt"></i> Ver Raw
                 </a>
                 <button class="btn btn-outline btn-sm copy-raw-btn" data-id="${id}">
