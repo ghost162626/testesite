@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeRaw 2025 | Plataforma de Compartilhamento</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-code"></i>
+                    <span>CodeRaw 2025</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active"><i class="fas fa-home"></i> Início</a></li>
+                        <li><a href="#raws"><i class="fas fa-compass"></i> Explorar</a></li>
+                        <li><a href="#about"><i class="fas fa-info-circle"></i> Sobre</a></li>
+                        <li><a href="#community"><i class="fas fa-users"></i> Comunidade</a></li>
+                    </ul>
+                </nav>
+                <div class="user-actions">
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <span id="userName" class="mr-2"></span>
+                        <span id="userBadge" class="admin-badge" style="display: none;">Admin</span>
+                    </div>
+                    <a href="auth/login.html" class="btn btn-outline" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Entrar</a>
+                    <a href="auth/register.html" class="btn btn-primary" id="registerBtn"><i class="fas fa-user-plus"></i> Criar Conta</a>
+                    <a href="#" class="btn btn-primary" id="createRawBtn" style="display: none;"><i class="fas fa-plus"></i> Novo Raw</a>
+                    <a href="#" class="btn btn-outline" id="logoutBtn" style="display: none;"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Compartilhe Códigos com Segurança</h1>
+            <p>Plataforma avançada para desenvolvedores compartilharem scripts com controle total de acesso e privacidade.</p>
+            <div class="d-flex justify-center gap-2">
+                <a href="#" class="btn btn-primary" id="heroCreateBtn"><i class="fas fa-rocket"></i> Começar Agora</a>
+                <a href="#raws" class="btn btn-outline"><i class="fas fa-code"></i> Ver Raws</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="main-content">
+        <div class="container">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalRaws">0</div>
+                    <div class="stat-label">Raws Publicados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalUsers">0</div>
+                    <div class="stat-label">Desenvolvedores</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="privatePercentage">0%</div>
+                    <div class="stat-label">Códigos Privados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Suporte</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="main-content" id="raws">
+        <div class="container">
+            <h2 class="section-title">Raws Recentes</h2>
+            <div class="raw-list" id="rawList">
+                <div class="text-center">
+                    <p class="text-muted">Carregando raws...</p>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <a href="#" class="btn btn-outline" id="loadMoreBtn"><i class="fas fa-sync"></i> Carregar Mais</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="main-content" id="createRawSection" style="display: none;">
+        <div class="container">
+            <h2 class="section-title">Criar Novo Raw</h2>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-plus-circle"></i> Novo Script</h3>
+                </div>
+                <div class="card-body">
+                    <form id="rawForm">
+                        <div class="form-group">
+                            <label class="form-label" for="rawTitle">Título</label>
+                            <input type="text" class="form-control" id="rawTitle" placeholder="Digite o título do seu código">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="rawDescription">Descrição</label>
+                            <textarea class="form-control" id="rawDescription" placeholder="Descreva o que seu código faz" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="rawCode">Código</label>
+                            <div class="code-editor">
+                                <div class="editor-header">
+                                    <span>script.lua</span>
+                                    <div class="editor-actions">
+                                        <button type="button" class="btn btn-outline btn-sm" id="copyCodeBtn"><i class="fas fa-copy"></i> Copiar</button>
+                                    </div>
+                                </div>
+                                <textarea class="editor-content" id="rawCode" placeholder="Cole seu código aqui...">-- Seu código aqui
+function main()
+    print("Olá, CodeRaw 2025!")
+end
+
+main()</textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Visibilidade</label>
+                            <div class="d-flex gap-2">
+                                <div>
+                                    <input type="radio" id="public" name="visibility" value="public" checked>
+                                    <label for="public"><i class="fas fa-globe"></i> Público</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="private" name="visibility" value="private">
+                                    <label for="private"><i class="fas fa-lock"></i> Privado</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" id="privateKeyGroup" style="display: none;">
+                            <label class="form-label" for="privateKey">Chave de Acesso</label>
+                            <input type="text" class="form-control" id="privateKey" placeholder="Digite uma chave para acesso privado">
+                            <small class="text-muted">Esta chave será necessária para acessar o raw.</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Publicar Raw</button>
+                            <button type="button" class="btn btn-outline" id="cancelCreateBtn">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="main-content" id="about">
+        <div class="container">
+            <h2 class="section-title">Sobre o CodeRaw</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="about-content">
+                        <h3><i class="fas fa-shield-alt"></i> Plataforma Segura para Desenvolvedores</h3>
+                        <p>O CodeRaw 2025 é uma plataforma moderna e segura para compartilhamento de códigos, desenvolvida especialmente para a comunidade de desenvolvimento.</p>
+                        <div class="features-grid">
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-lock"></i></div>
+                                <div class="feature-content">
+                                    <h4>Segurança Máxima</h4>
+                                    <p>Sistema de chaves para raws privados e proteção contra acesso não autorizado.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                                <div class="feature-content">
+                                    <h4>Acesso Rápido</h4>
+                                    <p>Geração automática de links para uso imediato.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-users"></i></div>
+                                <div class="feature-content">
+                                    <h4>Comunidade Ativa</h4>
+                                    <p>Compartilhe e colabore com outros desenvolvedores.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="fas fa-infinity"></i></div>
+                                <div class="feature-content">
+                                    <h4>Ilimitado</h4>
+                                    <p>Crie quantos raws quiser, sem limites de uso.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="main-content" id="community">
+        <div class="container">
+            <h2 class="section-title">Junte-se à Comunidade</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="community-content">
+                        <div class="community-stats">
+                            <div class="community-stat">
+                                <div class="stat-number" id="communityUsers">0</div>
+                                <div class="stat-label">Desenvolvedores Ativos</div>
+                            </div>
+                            <div class="community-stat">
+                                <div class="stat-number" id="communityRaws">0</div>
+                                <div class="stat-label">Raws Compartilhados</div>
+                            </div>
+                            <div class="community-stat">
+                                <div class="stat-number" id="communityViews">0</div>
+                                <div class="stat-label">Visualizações</div>
+                            </div>
+                        </div>
+                        <div class="community-actions">
+                            <div class="action-card">
+                                <div class="action-icon"><i class="fas fa-user-plus"></i></div>
+                                <h4>Crie sua Conta</h4>
+                                <p>Junte-se à comunidade e comece a compartilhar seus códigos.</p>
+                                <a href="auth/register.html" class="btn btn-primary btn-sm">Registrar</a>
+                            </div>
+                            <div class="action-card">
+                                <div class="action-icon"><i class="fas fa-code"></i></div>
+                                <h4>Compartilhe Códigos</h4>
+                                <p>Crie raws públicos ou privados com sistema de chaves.</p>
+                                <a href="#" class="btn btn-outline btn-sm" id="communityCreateBtn">Criar Raw</a>
+                            </div>
+                            <div class="action-card">
+                                <div class="action-icon"><i class="fas fa-download"></i></div>
+                                <h4>Use Links</h4>
+                                <p>Acesse códigos diretamente com links seguros.</p>
+                                <a href="#raws" class="btn btn-outline btn-sm">Explorar Raws</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>CodeRaw 2025</h3>
+                    <p class="text-muted">Plataforma segura para desenvolvedores compartilharem códigos.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Início</a></li>
+                        <li><a href="#raws"><i class="fas fa-chevron-right"></i> Explorar</a></li>
+                        <li><a href="#about"><i class="fas fa-chevron-right"></i> Sobre</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Recursos</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> API</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Suporte</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 CodeRaw. Todos os direitos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <a href="admin/index.html" class="admin-badge" id="adminLink" style="position: fixed; bottom: 20px; right: 20px; display: none;">
+        <i class="fas fa-cog"></i> Admin
+    </a>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
