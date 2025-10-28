@@ -34,8 +34,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const communityRaws = document.getElementById('communityRaws');
     const communityViews = document.getElementById('communityViews');
     
+    let currentUser = null;
+    
     // Auth state listener
     auth.onAuthStateChanged((user) => {
+        currentUser = user;
+        
         if (user) {
             // User is signed in
             loginBtn.style.display = 'none';
@@ -187,14 +191,15 @@ document.addEventListener('DOMContentLoaded', function() {
             raws.sort((a, b) => b.createdAt - a.createdAt);
             
             raws.forEach(raw => {
-                if (raw.visibility === 'public') {
+                // Mostrar raws públicos OU raws privados do usuário logado
+                if (raw.visibility === 'public' || (currentUser && raw.authorId === currentUser.uid)) {
                     const rawElement = createRawElement(raw.id, raw);
                     rawList.appendChild(rawElement);
                 }
             });
             
             if (raws.length === 0) {
-                rawList.innerHTML = '<div class="text-center"><p class="text-muted">Nenhum raw público encontrado.</p></div>';
+                rawList.innerHTML = '<div class="text-center"><p class="text-muted">Nenhum raw encontrado.</p></div>';
             }
             
         } catch (error) {
@@ -206,13 +211,21 @@ document.addEventListener('DOMContentLoaded', function() {
     function createRawElement(id, raw) {
         const div = document.createElement('div');
         div.className = 'raw-item';
+        
+        // Verificar se é do usuário atual
+        const isOwner = currentUser && raw.authorId === currentUser.uid;
+        const isPrivate = raw.visibility === 'private';
+        
         div.innerHTML = `
             <div class="raw-header">
                 <h3 class="raw-title">${escapeHtml(raw.title)}</h3>
-                <span class="raw-visibility ${raw.visibility}">
-                    <i class="fas ${raw.visibility === 'private' ? 'fa-lock' : 'fa-globe'}"></i>
-                    ${raw.visibility === 'private' ? 'Privado' : 'Público'}
-                </span>
+                <div class="raw-badges">
+                    <span class="raw-visibility ${raw.visibility}">
+                        <i class="fas ${isPrivate ? 'fa-lock' : 'fa-globe'}"></i>
+                        ${isPrivate ? 'Privado' : 'Público'}
+                    </span>
+                    ${isOwner ? '<span class="owner-badge"><i class="fas fa-crown"></i> Seu Raw</span>' : ''}
+                </div>
             </div>
             <p class="raw-description">${escapeHtml(raw.description || 'Sem descrição')}</p>
             <div class="raw-meta">
@@ -227,6 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <button class="btn btn-outline btn-sm copy-raw-btn" data-id="${id}">
                     <i class="fas fa-copy"></i> Copiar Loadstring
                 </button>
+                ${isPrivate ? `<span class="private-info"><i class="fas fa-info-circle"></i> Apenas você pode ver este raw</span>` : ''}
             </div>
         `;
         
