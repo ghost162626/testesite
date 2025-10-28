@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const communityViews = document.getElementById('communityViews');
     
     let currentUser = null;
+    let editingRawId = null;
     
     // Auth state listener
     auth.onAuthStateChanged((user) => {
@@ -96,10 +97,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e) e.preventDefault();
         createRawSection.style.display = 'block';
         createRawSection.scrollIntoView({ behavior: 'smooth' });
+        editingRawId = null;
+        document.getElementById('rawForm').reset();
+        document.querySelector('h2.section-title').textContent = 'Criar Novo Raw';
+        document.querySelector('.card-title').innerHTML = '<i class="fas fa-plus-circle"></i> Novo Script';
     }
     
     cancelCreateBtn.addEventListener('click', () => {
         createRawSection.style.display = 'none';
+        editingRawId = null;
     });
     
     // Visibility radio buttons
@@ -139,30 +145,47 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            const rawId = database.ref().child('raws').push().key;
-            const rawData = {
-                title: title,
-                description: description,
-                code: code,
-                visibility: visibility,
-                privateKey: visibility === 'private' ? privateKey : '',
-                authorId: user.uid,
-                authorName: user.displayName || user.email,
-                createdAt: Date.now(),
-                views: 0
-            };
+            if (editingRawId) {
+                // Editar raw existente
+                const rawData = {
+                    title: title,
+                    description: description,
+                    code: code,
+                    visibility: visibility,
+                    privateKey: visibility === 'private' ? privateKey : '',
+                    updatedAt: Date.now()
+                };
+                
+                await database.ref('raws/' + editingRawId).update(rawData);
+                alert('Raw atualizado com sucesso!');
+            } else {
+                // Criar novo raw
+                const rawId = database.ref().child('raws').push().key;
+                const rawData = {
+                    title: title,
+                    description: description,
+                    code: code,
+                    visibility: visibility,
+                    privateKey: visibility === 'private' ? privateKey : '',
+                    authorId: user.uid,
+                    authorName: user.displayName || user.email,
+                    createdAt: Date.now(),
+                    views: 0
+                };
+                
+                await database.ref('raws/' + rawId).set(rawData);
+                alert('Raw criado com sucesso! ID: ' + rawId);
+            }
             
-            await database.ref('raws/' + rawId).set(rawData);
-            
-            alert('Raw criado com sucesso! ID: ' + rawId);
             rawForm.reset();
             createRawSection.style.display = 'none';
+            editingRawId = null;
             loadRaws();
             updateStats();
             
         } catch (error) {
-            console.error('Erro ao criar raw:', error);
-            alert('Erro ao criar raw. Tente novamente.');
+            console.error('Erro ao salvar raw:', error);
+            alert('Erro ao salvar raw. Tente novamente.');
         }
     });
     
@@ -240,6 +263,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 <button class="btn btn-outline btn-sm copy-raw-btn" data-id="${id}">
                     <i class="fas fa-copy"></i> Copiar Loadstring
                 </button>
+                ${isOwner ? `
+                    <button class="btn btn-outline btn-sm edit-raw-btn" data-id="${id}">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="btn btn-outline btn-sm delete-raw-btn" data-id="${id}">
+                        <i class="fas fa-trash"></i> Apagar
+                    </button>
+                ` : ''}
                 ${isPrivate ? `<span class="private-info"><i class="fas fa-info-circle"></i> Apenas você pode ver este raw</span>` : ''}
             </div>
         `;
@@ -265,7 +296,60 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
+        // Add edit functionality for owner
+        if (isOwner) {
+            div.querySelector('.edit-raw-btn').addEventListener('click', function() {
+                editRaw(id, raw);
+            });
+            
+            div.querySelector('.delete-raw-btn').addEventListener('click', function() {
+                deleteRaw(id, raw.title);
+            });
+        }
+        
         return div;
+    }
+    
+    // Edit raw function
+    function editRaw(id, raw) {
+        editingRawId = id;
+        
+        // Preencher o formulário com os dados atuais
+        document.getElementById('rawTitle').value = raw.title;
+        document.getElementById('rawDescription').value = raw.description || '';
+        document.getElementById('rawCode').value = raw.code;
+        
+        // Configurar visibilidade
+        const visibilityRadio = document.querySelector(`input[name="visibility"][value="${raw.visibility}"]`);
+        if (visibilityRadio) {
+            visibilityRadio.checked = true;
+            privateKeyGroup.style.display = raw.visibility === 'private' ? 'block' : 'none';
+        }
+        
+        document.getElementById('privateKey').value = raw.privateKey || '';
+        
+        // Atualizar título da seção
+        document.querySelector('h2.section-title').textContent = 'Editar Raw';
+        document.querySelector('.card-title').innerHTML = '<i class="fas fa-edit"></i> Editar Script';
+        
+        // Mostrar seção de criação/edição
+        createRawSection.style.display = 'block';
+        createRawSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Delete raw function
+    async function deleteRaw(id, title) {
+        if (confirm(`Tem certeza que deseja apagar o raw "${title}"? Esta ação não pode ser desfeita.`)) {
+            try {
+                await database.ref('raws/' + id).remove();
+                alert('Raw apagado com sucesso!');
+                loadRaws();
+                updateStats();
+            } catch (error) {
+                console.error('Erro ao apagar raw:', error);
+                alert('Erro ao apagar raw. Tente novamente.');
+            }
+        }
     }
     
     // Load more button (simplificado para Realtime Database)
