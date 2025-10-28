@@ -1,7 +1,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script>
-// Configuração do Firebase
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBrkKTDKcKA16a1fL4mR3VKjArmxBUb8ho",
   authDomain: "coderaw-2025.firebaseapp.com",
@@ -20,31 +20,29 @@ const urlParams = new URLSearchParams(window.location.search);
 const codeId = urlParams.get('id');
 
 if (!codeId) {
-    // Se não tem ID, mostra erro
-    document.write('print("Erro: ID não especificado na URL")');
+    // Escrever código Lua de erro
+    document.write('print("ERRO: ID não especificado na URL")');
 } else {
     const database = firebase.database();
     
-    // Buscar no Firebase
     database.ref('raws/' + codeId).once('value')
         .then((snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
+                // ESCREVER DIRETAMENTE O CÓDIGO LUA
+                // O executor vai ignorar todo o HTML/JS e executar apenas isto:
+                document.write(data.code);
                 
-                // ESCREVER O CÓDIGO LUA DIRETAMENTE
-                // O loadstring vai ignorar todo o HTML/JavaScript e só executar isto
-                document.write(data.code || 'print("Código vazio")');
-                
-                // Atualizar visualizações
+                // Atualizar views
                 const currentViews = data.views || 0;
                 database.ref('raws/' + codeId + '/views').set(currentViews + 1);
                 
             } else {
-                document.write('print("Erro: Código não encontrado - ID: ' + codeId + '")');
+                document.write('print("ERRO: Código não encontrado para o ID: ' + codeId + '")');
             }
         })
         .catch((error) => {
-            document.write('print("Erro: Não foi possível carregar o código")');
+            document.write('print("ERRO: Não foi possível carregar o código do Firebase")');
         });
 }
 </script>
