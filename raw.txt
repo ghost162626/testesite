@@ -1,7 +1,7 @@
-<!-- Este arquivo é carregado pelo loadstring -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script>
+// Configuração do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBrkKTDKcKA16a1fL4mR3VKjArmxBUb8ho",
   authDomain: "coderaw-2025.firebaseapp.com",
@@ -15,29 +15,36 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
+// Pegar ID da URL
 const urlParams = new URLSearchParams(window.location.search);
 const codeId = urlParams.get('id');
 
 if (!codeId) {
-    document.write('print("Erro: ID não especificado")');
+    // Se não tem ID, mostra erro
+    document.write('print("Erro: ID não especificado na URL")');
 } else {
     const database = firebase.database();
     
+    // Buscar no Firebase
     database.ref('raws/' + codeId).once('value')
         .then((snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
-                // IMPORTANTE: Escrever o código Lua diretamente
-                document.write(data.code);
                 
+                // ESCREVER O CÓDIGO LUA DIRETAMENTE
+                // O loadstring vai ignorar todo o HTML/JavaScript e só executar isto
+                document.write(data.code || 'print("Código vazio")');
+                
+                // Atualizar visualizações
                 const currentViews = data.views || 0;
                 database.ref('raws/' + codeId + '/views').set(currentViews + 1);
+                
             } else {
-                document.write('print("Erro: Código não encontrado")');
+                document.write('print("Erro: Código não encontrado - ID: ' + codeId + '")');
             }
         })
         .catch((error) => {
-            document.write('print("Erro: Não foi possível carregar")');
+            document.write('print("Erro: Não foi possível carregar o código")');
         });
 }
 </script>
