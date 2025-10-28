@@ -230,14 +230,17 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         
-        // Add copy link functionality
-        div.querySelector('.copy-raw-btn').addEventListener('click', function() {
-            const rawUrl = `${window.location.origin}${window.location.pathname.replace('index.html', '')}raw.html?id=${id}`;
-            navigator.clipboard.writeText(rawUrl).then(() => {
-                alert('Link copiado!');
-            });
-        });
-        
+// Add copy link functionality
+div.querySelector('.copy-raw-btn').addEventListener('click', function() {
+    const rawUrl = `${window.location.origin}/api/raw?id=${id}`;
+    
+    // Copia o loadstring COMPLETO
+    const loadstringCode = `loadstring(game:HttpGet("${rawUrl}"))()`;
+    
+    navigator.clipboard.writeText(loadstringCode).then(() => {
+        alert('Loadstring copiado! Cole no executor.');
+    });
+});
         return div;
     }
     
